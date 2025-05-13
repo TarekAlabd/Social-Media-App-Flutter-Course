@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:social_media_app/core/utils/app_routes.dart';
+import 'package:social_media_app/core/utils/route/app_routes.dart';
 import 'package:social_media_app/core/views/pages/not_found_page.dart';
 import 'package:social_media_app/features/auth/views/pages/auth_page.dart';
 
