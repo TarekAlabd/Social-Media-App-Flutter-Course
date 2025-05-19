@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app/core/utils/app_assets.dart';
 import 'package:social_media_app/core/utils/theme/app_colors.dart';
+import 'package:social_media_app/features/auth/cubit/auth_cubit.dart';
 import 'package:social_media_app/features/auth/views/widgets/login_view.dart';
 import 'package:social_media_app/features/auth/views/widgets/register_view.dart';
 
@@ -16,6 +18,21 @@ class AuthPage extends StatelessWidget {
 
     final List<Widget> tabViews = [LoginView(), RegisterView()];
 
+    return BlocProvider(
+      create: (context) => AuthCubit(),
+      child: AuthView(tabs: tabs, tabViews: tabViews),
+    );
+  }
+}
+
+class AuthView extends StatelessWidget {
+  const AuthView({super.key, required this.tabs, required this.tabViews});
+
+  final List<Tab> tabs;
+  final List<Widget> tabViews;
+
+  @override
+  Widget build(BuildContext context) {
     return DefaultTabController(
       length: tabs.length,
       child: Builder(

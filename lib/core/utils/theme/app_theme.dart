@@ -5,15 +5,18 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
     scaffoldBackgroundColor: AppColors.background,
-    inputDecorationTheme: const InputDecorationTheme(
+    inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(8)),
+        borderSide: BorderSide(color: AppColors.greyBorder, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(8)),
+        borderSide: BorderSide(color: AppColors.greyBorder, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(8)),
+        borderSide: BorderSide(color: AppColors.greyBorder, width: 1),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(8)),

@@ -4,13 +4,18 @@ import 'package:social_media_app/core/utils/theme/app_colors.dart';
 class MainButton extends StatelessWidget {
   final double height;
   final VoidCallback? onPressed;
-  final Widget child;
+  final Widget? child;
+  final bool isLoading;
   const MainButton({
     super.key,
     this.height = 50,
     this.onPressed,
-    required this.child,
-  });
+    this.isLoading = false,
+    this.child,
+  }) : assert(
+          isLoading == false || child == null,
+          'Child cannot be set when isLoading is true',
+        );
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +30,7 @@ class MainButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: const EdgeInsets.symmetric(horizontal: 16),
         ),
-        child: child,
+        child: isLoading ? const CircularProgressIndicator.adaptive() : child,
       ),
     );
   }
