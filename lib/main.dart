@@ -22,22 +22,26 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => auth.AuthCubit()..getUserData(),
+      create: (context) => auth.AuthCubit()..checkUserAuth(),
       child: Builder(
         builder: (context) {
           return BlocBuilder<auth.AuthCubit, auth.AuthState>(
             bloc: BlocProvider.of<auth.AuthCubit>(context),
+            buildWhen: (previous, current) => current is auth.AuthSuccess,
             builder: (context, state) {
               return MaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: AppConstants.appName,
                 theme: AppTheme.lightTheme,
                 onGenerateRoute: AppRouter.generateRoute,
-                initialRoute: state is auth.AuthSuccess ? AppRoutes.homeRoute : AppRoutes.authRoute,
+                initialRoute:
+                    state is auth.AuthSuccess
+                        ? AppRoutes.homeRoute
+                        : AppRoutes.authRoute,
               );
             },
           );
-        }
+        },
       ),
     );
   }

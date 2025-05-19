@@ -56,18 +56,10 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  // TODO: Will need to edit this to use the user data
-  Future<void> getUserData() async {
-    emit(AuthLoading());
-    try {
-      final userData = await authServices.getUserData();
-      if (userData != null) {
-        emit(AuthSuccess());
-      } else {
-        emit(AuthFailure('User not found'));
-      }
-    } catch (e) {
-      emit(AuthFailure(e.toString()));
+  void checkUserAuth() {
+    final userData = authServices.fetchRawUser();
+    if (userData != null) {
+      emit(AuthSuccess());
     }
   }
 }
