@@ -18,11 +18,14 @@ class AuthServices {
     }
   }
 
-  Future<void> signUpWithEmail(String email, String password) async {
+  Future<void> signUpWithEmail({required String email, required String password, required String name}) async {
     try {
       final response = await supabase.auth.signUp(
         email: email,
         password: password,
+        data: {
+          'name': name,
+        },
       );
       if (response.user == null) {
         throw Exception('Failed to sign up');

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_app/core/utils/route/app_routes.dart';
 import 'package:social_media_app/core/utils/theme/app_colors.dart';
 import 'package:social_media_app/core/views/widgets/main_button.dart';
+import 'package:social_media_app/features/auth/cubit/auth_cubit.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -17,6 +20,8 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
+
     return Form(
       key: _formKey,
       child: Column(
@@ -60,19 +65,48 @@ class _LoginViewState extends State<LoginView> {
             },
           ),
           const SizedBox(height: 32),
-          MainButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Handle login logic
+          BlocConsumer<AuthCubit, AuthState>(
+            bloc: authCubit,
+            listenWhen: (previous, current) => current is AuthSuccess || current is AuthFailure,
+            listener: (context, state) {
+              if (state is AuthSuccess) {
+                Navigator.of(context).pushNamed(AppRoutes.homeRoute);
+              } else if (state is AuthFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error),
+                    backgroundColor: AppColors.red,
+                  ),
+                );
               }
             },
-            child: Text(
-              'Login',
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.white,
-              ),
-            ),
+            buildWhen:
+                (previous, current) =>
+                    current is AuthLoading ||
+                    current is AuthSuccess ||
+                    current is AuthFailure,
+            builder: (context, state) {
+              if (state is AuthLoading) {
+                return MainButton(isLoading: true);
+              }
+              return MainButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    await authCubit.signInWithEmail(
+                      _emailController.text,
+                      _passwordController.text,
+                    );
+                  }
+                },
+                child: Text(
+                  'Login',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.white,
+                  ),
+                ),
+              );
+            },
           ),
           Align(
             alignment: Alignment.topRight,
