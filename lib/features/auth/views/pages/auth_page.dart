@@ -37,7 +37,7 @@ class AuthPage extends StatelessWidget {
                       tabs: tabs,
                       isScrollable: true,
                       tabAlignment: TabAlignment.start,
-                      indicatorColor: AppColors.selectedTabIndicator,
+                      indicatorColor: AppColors.babyBlue,
                       labelColor: AppColors.black,
                       labelStyle: Theme.of(context).textTheme.bodyLarge!
                           .copyWith(fontWeight: FontWeight.w400),
