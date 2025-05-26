@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app/core/utils/theme/app_colors.dart';
+import 'package:social_media_app/features/home/cubit/home_cubit.dart';
+import 'package:social_media_app/features/home/models/story_model.dart';
 
 class SotiresSection extends StatelessWidget {
   const SotiresSection({super.key});
@@ -7,17 +10,44 @@ class SotiresSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
+    final homeCubit = BlocProvider.of<HomeCubit>(context);
 
     return SizedBox(
       height: size.height * 0.15,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 10, // Replace with your actual number of stories
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return StoryItem(firstItem: true);
+      child: BlocConsumer<HomeCubit, HomeState>(
+        bloc: homeCubit,
+        listenWhen: (previous, current) => current is StoriesError,
+        listener: (context, state) {
+          if (state is StoriesError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Error: ${state.message}')));
           }
-          return StoryItem();
+        },
+        buildWhen:
+            (previous, current) =>
+                current is StoriesLoading ||
+                current is StoriesLoaded ||
+                current is StoriesError,
+        builder: (context, state) {
+          if (state is StoriesLoading) {
+            return const Center(child: CircularProgressIndicator.adaptive());
+          } else if (state is StoriesLoaded) {
+            final stories = state.stories;
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: stories.length + 1, // +1 for the first item
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return StoryItem();
+                }
+                return StoryItem(
+                  story: stories[index-1],
+                ); // Replace with your story item widget
+              },
+            );
+          }
+          return const SizedBox();
         },
       ),
     );
@@ -25,15 +55,15 @@ class SotiresSection extends StatelessWidget {
 }
 
 class StoryItem extends StatelessWidget {
-  final bool firstItem;
-  const StoryItem({this.firstItem = false, super.key});
+  final StoryModel? story;
+  const StoryItem({super.key, this.story});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         // Handle story tap
-        if (firstItem) {
+        if (story == null) {
           // Navigate to share story page
         } else {
           // Navigate to view story page
@@ -51,21 +81,21 @@ class StoryItem extends StatelessWidget {
             ),
             child: CircleAvatar(
               radius: 35,
-              backgroundColor: firstItem ? AppColors.babyBlue : null,
+              backgroundColor: story == null ? AppColors.babyBlue : null,
+              backgroundImage: story == null ? null : NetworkImage(
+                story!.imagUrl, // Replace with your image URL
+              ),
               child:
-                  firstItem
+                  story == null
                       ? const Icon(Icons.add, color: AppColors.white, size: 30)
                       : null,
-              // backgroundImage: NetworkImage(
-              //   'https://example.com/user_profile.jpg', // Replace with your image URL
-              // ),
             ),
           ),
           const SizedBox(height: 8),
-          if (firstItem)
+          if (story == null)
             Text('Share Story', style: Theme.of(context).textTheme.titleMedium)
           else
-            Text('User', style: Theme.of(context).textTheme.titleMedium),
+            Text(story!.authorId, style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
     );
