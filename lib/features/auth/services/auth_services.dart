@@ -1,8 +1,11 @@
+import 'package:social_media_app/core/services/supabase_database_services.dart';
+import 'package:social_media_app/core/utils/app_tables_names.dart';
 import 'package:social_media_app/features/auth/models/user_data.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthServices {
   final supabase = Supabase.instance.client;
+  final supabaseDatabaseServices = SupabaseDatabaseServices.instance;
 
   Future<void> signInWithEmail(String email, String password) async {
     try {
@@ -18,14 +21,16 @@ class AuthServices {
     }
   }
 
-  Future<void> signUpWithEmail({required String email, required String password, required String name}) async {
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+    required String name,
+  }) async {
     try {
       final response = await supabase.auth.signUp(
         email: email,
         password: password,
-        data: {
-          'name': name,
-        },
+        data: {'name': name},
       );
       if (response.user == null) {
         throw Exception('Failed to sign up');
@@ -53,41 +58,18 @@ class AuthServices {
   }
 
   User? fetchRawUser() {
-      final user = supabase.auth.currentUser;
-      if (user == null) return null;
-      return user;
-  }
-
-  Future<UserData?> getUserData() async {
-    try {
-      final user = supabase.auth.currentUser;
-      if (user == null) return null;
-
-      final response = await supabase
-          .from('users')
-          .select()
-          .eq('id', user.id)
-          .single();
-
-      if (response.keys.isEmpty) {
-        throw Exception('Failed to fetch user data');
-      }
-
-      return UserData.fromMap(response);
-    } catch (e) {
-      rethrow;
-    }
+    final user = supabase.auth.currentUser;
+    if (user == null) return null;
+    return user;
   }
 
   Future<void> _setUserData(String name, String email, String userId) async {
     try {
-      await supabase
-          .from('users')
-          .insert({
-            'name': name,
-            'email': email,
-            'id': userId,
-          });
+      final userData = UserData(id: userId, name: name, email: email);
+      await supabaseDatabaseServices.insertRow(
+        table: AppTablesNames.users,
+        values: userData.toMap(),
+      );
     } catch (e) {
       rethrow;
     }
