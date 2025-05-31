@@ -3,7 +3,6 @@ import 'dart:convert';
 class UserData {
   final String id;
   final String name;
-  final String username;
   final String email;
   final String? imageUrl;
   final String? title;
@@ -11,7 +10,6 @@ class UserData {
   const UserData({
     required this.id,
     required this.name,
-    required this.username,
     required this.email,
     this.imageUrl,
     this.title,
@@ -22,10 +20,9 @@ class UserData {
   
     result.addAll({'id': id});
     result.addAll({'name': name});
-    result.addAll({'username': username});
     result.addAll({'email': email});
     if(imageUrl != null){
-      result.addAll({'imageUrl': imageUrl});
+      result.addAll({'image_url': imageUrl});
     }
     if(title != null){
       result.addAll({'title': title});
@@ -38,9 +35,8 @@ class UserData {
     return UserData(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
-      username: map['username'] ?? '',
       email: map['email'] ?? '',
-      imageUrl: map['imageUrl'],
+      imageUrl: map['image_url'],
       title: map['title'],
     );
   }
@@ -60,7 +56,6 @@ class UserData {
     return UserData(
       id: id ?? this.id,
       name: name ?? this.name,
-      username: username ?? this.username,
       email: email ?? this.email,
       imageUrl: imageUrl ?? this.imageUrl,
       title: title ?? this.title,

@@ -34,15 +34,16 @@ class SotiresSection extends StatelessWidget {
             return const Center(child: CircularProgressIndicator.adaptive());
           } else if (state is StoriesLoaded) {
             final stories = state.stories;
-            return ListView.builder(
+            return ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: stories.length + 1, // +1 for the first item
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return StoryItem();
                 }
                 return StoryItem(
-                  story: stories[index-1],
+                  story: stories[index - 1],
                 ); // Replace with your story item widget
               },
             );
@@ -60,44 +61,56 @@ class StoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        // Handle story tap
-        if (story == null) {
-          // Navigate to share story page
-        } else {
-          // Navigate to view story page
-        }
-      },
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            margin: const EdgeInsets.only(right: 8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        InkWell(
+          onTap: () {
+            // Handle story tap
+            if (story == null) {
+              // Navigate to share story page
+            } else {
+              // Navigate to view story page
+            }
+          },
+          child: Container(
             decoration: BoxDecoration(
               color: AppColors.white,
               border: Border.all(color: AppColors.primary, width: 2),
               shape: BoxShape.circle,
             ),
             child: CircleAvatar(
-              radius: 35,
+              radius: 40,
               backgroundColor: story == null ? AppColors.babyBlue : null,
-              backgroundImage: story == null ? null : NetworkImage(
-                story!.imagUrl, // Replace with your image URL
-              ),
+              backgroundImage:
+                  story == null
+                      ? null
+                      : NetworkImage(
+                        story!.imageUrl, // Replace with your image URL
+                      ),
               child:
                   story == null
                       ? const Icon(Icons.add, color: AppColors.white, size: 30)
                       : null,
             ),
           ),
-          const SizedBox(height: 8),
-          if (story == null)
-            Text('Share Story', style: Theme.of(context).textTheme.titleMedium)
-          else
-            Text(story!.authorId, style: Theme.of(context).textTheme.titleMedium),
-        ],
-      ),
+        ),
+        const SizedBox(height: 8),
+        if (story == null)
+          Text(
+            'Share Story',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600),
+          )
+        else
+          Text(
+            story!.authorName.split(' ').first,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600),
+          ),
+      ],
     );
   }
 }
