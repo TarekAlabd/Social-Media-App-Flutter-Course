@@ -8,10 +8,12 @@ environment:
   sdk: ^3.7.2
 
 dependencies:
+  cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  intl: ^0.20.2
   persistent_bottom_nav_bar_v2: ^6.0.1
   supabase_flutter: ^2.9.0
 

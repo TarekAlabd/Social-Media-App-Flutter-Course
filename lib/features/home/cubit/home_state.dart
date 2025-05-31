@@ -19,3 +19,17 @@ final class StoriesError extends HomeState {
 
   const StoriesError(this.message);
 }
+
+final class PostsLoading extends HomeState {}
+
+final class PostsLoaded extends HomeState {
+  final List<PostModel> posts;
+
+  const PostsLoaded(this.posts);
+}
+
+final class PostsError extends HomeState {
+  final String message;
+
+  const PostsError(this.message);
+}

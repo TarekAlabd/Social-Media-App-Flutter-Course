@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app/features/home/cubit/home_cubit.dart';
 import 'package:social_media_app/features/home/views/widgets/home_page_header.dart';
 import 'package:social_media_app/features/home/views/widgets/post_writing_card.dart';
+import 'package:social_media_app/features/home/views/widgets/posts_section.dart';
 import 'package:social_media_app/features/home/views/widgets/stories_section.dart';
 
 class HomePage extends StatelessWidget {
@@ -14,6 +15,7 @@ class HomePage extends StatelessWidget {
       create: (context) {
         final cubit = HomeCubit();
         cubit.fetchStories();
+        cubit.fetchPosts();
         return cubit;
       },
       child: SafeArea(
@@ -28,6 +30,7 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 24),
               SotiresSection(),
               const SizedBox(height: 16),
+              PostsSection(),
             ],
           ),
         ),
