@@ -47,4 +47,19 @@ class HomeCubit extends Cubit<HomeState> {
       emit(PostsError(e.toString()));
     }
   }
+
+  Future<void> createPost(PostModel post) async {
+    emit(PostCreating());
+    try {
+      await homeServices.addPost(post);
+      emit(PostCreated(post));
+    } catch (e) {
+      emit(PostCreateError(e.toString()));
+    }
+  }
+  
+  Future<void> refresh() async {
+    await fetchStories();
+    await fetchPosts();
+  }
 }
