@@ -8,6 +8,7 @@ final class HomeInitial extends HomeState {}
 
 final class StoriesLoading extends HomeState {}
 
+/// Stories States
 final class StoriesLoaded extends HomeState {
   final List<StoryModel> stories;
 
@@ -19,6 +20,8 @@ final class StoriesError extends HomeState {
 
   const StoriesError(this.message);
 }
+
+/// Fetching Posts States
 
 final class PostsLoading extends HomeState {}
 
@@ -32,4 +35,20 @@ final class PostsError extends HomeState {
   final String message;
 
   const PostsError(this.message);
+}
+
+/// Creating Posts States
+
+final class PostCreating extends HomeState {}
+
+final class PostCreated extends HomeState {
+  final PostModel post;
+
+  const PostCreated(this.post);
+}
+
+final class PostCreateError extends HomeState {
+  final String message;
+
+  const PostCreateError(this.message);
 }

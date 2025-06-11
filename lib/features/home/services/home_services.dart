@@ -40,4 +40,15 @@ class HomeServices {
       rethrow;
     }
   }
+
+  Future<void> addPost(PostModel post) async {
+    try {
+      await supabaseServices.insertRow(
+        table: AppTablesNames.posts,
+        values: post.toMap(),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
