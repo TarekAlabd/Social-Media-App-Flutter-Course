@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app/core/services/core_auth_services.dart';
+import 'package:social_media_app/features/auth/models/user_data.dart';
 import 'package:social_media_app/features/home/models/post_model.dart';
+import 'package:social_media_app/features/home/models/post_request_body.dart';
 import 'package:social_media_app/features/home/models/story_model.dart';
 import 'package:social_media_app/features/home/services/home_services.dart';
 
@@ -11,6 +15,16 @@ class HomeCubit extends Cubit<HomeState> {
 
   final homeServices = HomeServices();
   final coreAuthServices = CoreAuthServices();
+
+  Future<void> fetchInitialCreatePost() async {
+    emit(FetchingUserData());
+    final currentUser = await coreAuthServices.getCurrentUserData();
+    if (currentUser == null) {
+      emit(PostCreateError("User not authenticated"));
+      return;
+    }
+    emit(PostCreatingInitial(currentUser: currentUser));
+  }
 
   Future<void> fetchStories() async {
     emit(StoriesLoading());
@@ -38,7 +52,10 @@ class HomeCubit extends Cubit<HomeState> {
       for (var post in rawPosts) {
         final userData = await coreAuthServices.getUserData(post.authorId);
         if (userData != null) {
-          post = post.copyWith(authorName: userData.name, authorImageUrl: userData.imageUrl);
+          post = post.copyWith(
+            authorName: userData.name,
+            authorImageUrl: userData.imageUrl,
+          );
         }
         posts.add(post);
       }
@@ -48,16 +65,31 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> createPost(PostModel post) async {
+  Future<void> createPost({
+    required String text,
+    File? image,
+    File? file,
+  }) async {
     emit(PostCreating());
     try {
+      final currentUser = await coreAuthServices.getCurrentUserData();
+      if (currentUser == null) {
+        emit(PostCreateError("User not authenticated"));
+        return;
+      }
+      final post = PostRequestBody(
+        text: text,
+        authorId: currentUser.id,
+        image: image,
+        file: file,
+      );
       await homeServices.addPost(post);
-      emit(PostCreated(post));
+      emit(PostCreated());
     } catch (e) {
       emit(PostCreateError(e.toString()));
     }
   }
-  
+
   Future<void> refresh() async {
     await fetchStories();
     await fetchPosts();

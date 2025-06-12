@@ -1,8 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app/core/utils/theme/app_colors.dart';
 import 'package:social_media_app/features/home/cubit/home_cubit.dart';
-import 'package:social_media_app/features/home/models/post_model.dart';
 
 class CreatePostPage extends StatefulWidget {
   const CreatePostPage({super.key});
@@ -13,10 +13,13 @@ class CreatePostPage extends StatefulWidget {
 
 class _CreatePostPageState extends State<CreatePostPage> {
   final _textController = TextEditingController();
+  late final HomeCubit homeCubit;
 
   @override
   void initState() {
     super.initState();
+    homeCubit = context.read<HomeCubit>();
+    homeCubit.fetchInitialCreatePost();
     _textController.addListener(() {
       setState(() {}); // Update the UI when text changes
     });
@@ -26,13 +29,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
   void dispose() {
     _textController.removeListener(() {});
     _textController.dispose();
+    homeCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final homeCubit = context.read<HomeCubit>();
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Post'),
@@ -43,23 +45,45 @@ class _CreatePostPageState extends State<CreatePostPage> {
           },
         ),
         actions: [
-          TextButton(
-            child: Text(
-              'Post',
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                color:
-                    _textController.text.isNotEmpty
-                        ? AppColors.primary
-                        : AppColors.grey,
-              ),
-            ),
-            onPressed: () async {
-              // await homeCubit.createPost(
-              //   PostModel(
-              //     text: _textController.text,
-              //     authorId: 'currentUserId', // Replace with actual user ID
-              //   ),
-              // );
+          BlocConsumer<HomeCubit, HomeState>(
+            bloc: homeCubit,
+            listenWhen:
+                (previous, current) =>
+                    current is PostCreated || current is PostCreateError,
+            listener: (context, state) {
+              if (state is PostCreated) {
+                Navigator.of(context).pop();
+              } else if (state is PostCreateError) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.message)));
+              }
+            },
+            buildWhen:
+                (previous, current) =>
+                    current is PostCreating ||
+                    current is PostCreateError ||
+                    current is PostCreated,
+            builder: (context, state) {
+              if (state is PostCreating) {
+                return const Center(
+                  child: CircularProgressIndicator.adaptive(),
+                );
+              }
+              return TextButton(
+                child: Text(
+                  'Post',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color:
+                        _textController.text.isNotEmpty
+                            ? AppColors.primary
+                            : AppColors.grey,
+                  ),
+                ),
+                onPressed: () async {
+                  await homeCubit.createPost(text: _textController.text);
+                },
+              );
             },
           ),
         ],
@@ -72,21 +96,39 @@ class _CreatePostPageState extends State<CreatePostPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.babyBlue,
-                        child: const Icon(Icons.person, color: AppColors.white),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          'User Name', // Replace with actual user name
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ),
-                    ],
+                  BlocBuilder<HomeCubit, HomeState>(
+                    bloc: homeCubit,
+                    buildWhen:
+                        (previous, current) => current is PostCreatingInitial,
+                    builder: (context, state) {
+                      if (state is FetchingUserData) {
+                        return const Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        );
+                      } else if (state is PostCreatingInitial) {
+                        // Use the current user data from the state
+                        final currentUser = state.currentUser;
+                        return Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage: currentUser.imageUrl != null ? CachedNetworkImageProvider(
+                                currentUser.imageUrl!,
+                              ) : null,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                currentUser.name,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
                   ),
                   TextField(
                     controller: _textController,
