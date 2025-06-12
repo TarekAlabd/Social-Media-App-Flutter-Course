@@ -58,3 +58,31 @@ final class PostCreateError extends HomeState {
 
   const PostCreateError(this.message);
 }
+
+final class ImagePicking extends HomeState {}
+
+final class ImagePicked extends HomeState {
+  final XFile image;
+
+  const ImagePicked(this.image);
+}
+
+final class ImagePickedError extends HomeState {
+  final String message;
+
+  const ImagePickedError(this.message);
+}
+
+final class FilePicking extends HomeState {}
+
+final class FilePicked extends HomeState {
+  final XFile file;
+
+  const FilePicked(this.file);
+}
+
+final class FilePickedError extends HomeState {
+  final String message;
+
+  const FilePickedError(this.message);
+}
