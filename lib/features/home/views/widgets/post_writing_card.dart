@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app/core/utils/route/app_routes.dart';
 import 'package:social_media_app/core/utils/theme/app_colors.dart';
+import 'package:social_media_app/features/home/cubit/home_cubit.dart';
 
 class PostWritingCard extends StatelessWidget {
   const PostWritingCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final homeCubit = context.read<HomeCubit>();
+    Future<void> navigatorToPost() => Navigator.of(context, rootNavigator: true)
+        .pushNamed(AppRoutes.postRoute, arguments: homeCubit)
+        .then((_) async => await homeCubit.refresh());
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -25,11 +32,7 @@ class PostWritingCard extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               InkWell(
-                onTap:
-                    () => Navigator.of(
-                      context,
-                      rootNavigator: true,
-                    ).pushNamed(AppRoutes.postRoute),
+                onTap: navigatorToPost,
                 child: Text(
                   'What\'s on your head?',
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -45,11 +48,7 @@ class PostWritingCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               InkWell(
-                onTap:
-                    () => Navigator.of(
-                      context,
-                      rootNavigator: true,
-                    ).pushNamed(AppRoutes.postRoute),
+                onTap: navigatorToPost,
                 child: Row(
                   children: [
                     const Icon(Icons.image, color: AppColors.babyBlue),
@@ -70,11 +69,7 @@ class PostWritingCard extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               InkWell(
-                onTap:
-                    () => Navigator.of(
-                      context,
-                      rootNavigator: true,
-                    ).pushNamed(AppRoutes.postRoute),
+                onTap: navigatorToPost,
                 child: Row(
                   children: [
                     const Icon(Icons.video_call, color: AppColors.babyBlue),

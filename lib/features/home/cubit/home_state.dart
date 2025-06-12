@@ -41,14 +41,46 @@ final class PostsError extends HomeState {
 
 final class PostCreating extends HomeState {}
 
-final class PostCreated extends HomeState {
-  final PostModel post;
-
-  const PostCreated(this.post);
-}
+final class PostCreated extends HomeState {}
 
 final class PostCreateError extends HomeState {
   final String message;
 
   const PostCreateError(this.message);
+}
+
+final class PostCreateInitialLoading extends HomeState {}
+
+final class PostCreateInitialData extends HomeState {
+  final UserData userData;
+
+  const PostCreateInitialData(this.userData);
+}
+
+final class PickingImage extends HomeState {}
+
+final class ImagePicked extends HomeState {
+  final File image;
+
+  const ImagePicked(this.image);
+}
+
+final class PickingImageError extends HomeState {
+  final String message;
+
+  const PickingImageError(this.message);
+}
+
+final class PickingFile extends HomeState {}
+
+final class FilePicked extends HomeState {
+  final File file;
+
+  const FilePicked(this.file);
+}
+
+final class PickingFileError extends HomeState {
+  final String message;
+
+  const PickingFileError(this.message);
 }
