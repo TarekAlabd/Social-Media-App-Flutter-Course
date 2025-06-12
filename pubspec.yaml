@@ -10,9 +10,11 @@ environment:
 dependencies:
   cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
+  file_picker: ^10.1.9
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  image_picker: ^1.1.2
   intl: ^0.20.2
   persistent_bottom_nav_bar_v2: ^6.0.1
   supabase_flutter: ^2.9.0

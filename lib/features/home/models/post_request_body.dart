@@ -29,16 +29,5 @@ class PostRequestBody {
     return result;
   }
 
-  factory PostRequestBody.fromMap(Map<String, dynamic> map) {
-    return PostRequestBody(
-      text: map['text'] ?? '',
-      authorId: map['author_id'] ?? '',
-      image: map['image'],
-      file: map['file'],
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory PostRequestBody.fromJson(String source) => PostRequestBody.fromMap(json.decode(source));
 }

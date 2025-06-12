@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +31,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
   void dispose() {
     _textController.removeListener(() {});
     _textController.dispose();
-    homeCubit.close();
     super.dispose();
   }
 
@@ -66,8 +67,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     current is PostCreated,
             builder: (context, state) {
               if (state is PostCreating) {
-                return const Center(
-                  child: CircularProgressIndicator.adaptive(),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: const Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  ),
                 );
               }
               return TextButton(
@@ -90,95 +94,159 @@ class _CreatePostPageState extends State<CreatePostPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                children: [
-                  BlocBuilder<HomeCubit, HomeState>(
-                    bloc: homeCubit,
-                    buildWhen:
-                        (previous, current) => current is PostCreatingInitial,
-                    builder: (context, state) {
-                      if (state is FetchingUserData) {
-                        return const Center(
-                          child: CircularProgressIndicator.adaptive(),
-                        );
-                      } else if (state is PostCreatingInitial) {
-                        // Use the current user data from the state
-                        final currentUser = state.currentUser;
-                        return Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundImage: currentUser.imageUrl != null ? CachedNetworkImageProvider(
-                                currentUser.imageUrl!,
-                              ) : null,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Text(
-                                currentUser.name,
-                                style: Theme.of(context).textTheme.titleMedium,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  children: [
+                    BlocBuilder<HomeCubit, HomeState>(
+                      bloc: homeCubit,
+                      buildWhen:
+                          (previous, current) => current is PostCreatingInitial,
+                      builder: (context, state) {
+                        if (state is FetchingUserData) {
+                          return const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          );
+                        } else if (state is PostCreatingInitial) {
+                          // Use the current user data from the state
+                          final currentUser = state.currentUser;
+                          return Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 20,
+                                backgroundImage:
+                                    currentUser.imageUrl != null
+                                        ? CachedNetworkImageProvider(
+                                          currentUser.imageUrl!,
+                                        )
+                                        : null,
                               ),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    },
-                  ),
-                  TextField(
-                    controller: _textController,
-                    maxLines: 6,
-                    decoration: const InputDecoration(
-                      hintText: 'What\'s on your mind?',
-                      border: OutlineInputBorder(borderSide: BorderSide.none),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  currentUser.name,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ),
+                            ],
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
+                    ),
+                    TextField(
+                      controller: _textController,
+                      maxLines: 6,
+                      decoration: const InputDecoration(
+                        hintText: 'What\'s on your mind?',
+                        border: OutlineInputBorder(borderSide: BorderSide.none),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    BlocBuilder<HomeCubit, HomeState>(
+                      bloc: homeCubit,
+                      buildWhen:
+                          (previous, current) =>
+                              current is ImagePicked ||
+                              current is ImagePickedError ||
+                              current is ImagePicking,
+                      builder: (context, state) {
+                        if (state is ImagePicked) {
+                          return Image.file(
+                            File(state.image.path),
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        } else if (state is ImagePickedError) {
+                          return Text(
+                            state.message,
+                            style: const TextStyle(color: AppColors.red),
+                          );
+                        } else if (state is ImagePicking) {
+                          return const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                    BlocBuilder<HomeCubit, HomeState>(
+                      bloc: homeCubit,
+                      buildWhen:
+                          (previous, current) =>
+                              current is FilePicked ||
+                              current is FilePickedError ||
+                              current is FilePicking,
+                      builder: (context, state) {
+                        if (state is FilePicked) {
+                          return ListTile(
+                            leading: const Icon(
+                              Icons.file_present,
+                              color: AppColors.primary,
+                            ),
+                            title: Text(state.file.name),
+                          );
+                        } else if (state is FilePickedError) {
+                          return Text(
+                            state.message,
+                            style: const TextStyle(color: Colors.red),
+                          );
+                        } else if (state is FilePicking) {
+                          return const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Divider(color: AppColors.greyBorder, indent: 24, endIndent: 24),
+              const SizedBox(height: 16),
+              Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.camera, color: AppColors.primary),
+                    title: const Text('Camera'),
+                    onTap: () async {
+                      await homeCubit.takePhoto();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.image, color: AppColors.primary),
+                    title: const Text('Upload Image'),
+                    onTap: () async {
+                      await homeCubit.pickImage();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.file_copy,
+                      color: AppColors.primary,
+                    ),
+                    title: const Text('Upload File'),
+                    onTap: () async {
+                      await homeCubit.pickFile();
+                    },
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16),
-            Divider(color: AppColors.greyBorder, indent: 24, endIndent: 24),
-            const SizedBox(height: 16),
-            Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.camera, color: AppColors.primary),
-                  title: const Text('Camera'),
-                  onTap: () {
-                    // Handle add photos logic here
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.image, color: AppColors.primary),
-                  title: const Text('Upload Image'),
-                  onTap: () {
-                    // Handle add video logic here
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.file_copy,
-                    color: AppColors.primary,
-                  ),
-                  title: const Text('Upload File'),
-                  onTap: () {
-                    // Handle add location logic here
-                  },
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
