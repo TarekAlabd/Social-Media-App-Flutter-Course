@@ -19,11 +19,11 @@ class PostRequestBody {
   
     result.addAll({'text': text});
     result.addAll({'author_id': authorId});
-    if(image != null){
-      result.addAll({'image': image!});
+    if (image != null) {
+      result.addAll({'image': base64Encode(image!.readAsBytesSync())});
     }
-    if(file != null){
-      result.addAll({'file': file!});
+    if (file != null) {
+      result.addAll({'file': base64Encode(file!.readAsBytesSync())});
     }
   
     return result;
