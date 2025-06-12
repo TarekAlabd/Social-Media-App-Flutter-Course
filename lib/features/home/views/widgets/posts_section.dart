@@ -30,10 +30,11 @@ class PostsSection extends StatelessWidget {
           if (posts.isEmpty) {
             return const Center(child: Text('No posts available.'));
           }
-          return ListView.builder(
+          return ListView.separated(
             itemCount: posts.length,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
               final post = posts[index];
               return PostItemWidget(post: post);

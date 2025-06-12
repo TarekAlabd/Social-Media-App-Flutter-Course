@@ -39,12 +39,18 @@ final class PostsError extends HomeState {
 
 /// Creating Posts States
 
+final class PostCreatingInitial extends HomeState {
+  final UserData currentUser;
+  const PostCreatingInitial({required this.currentUser});
+}
+
+final class FetchingUserData extends HomeState {
+}
+
 final class PostCreating extends HomeState {}
 
 final class PostCreated extends HomeState {
-  final PostModel post;
-
-  const PostCreated(this.post);
+  const PostCreated();
 }
 
 final class PostCreateError extends HomeState {

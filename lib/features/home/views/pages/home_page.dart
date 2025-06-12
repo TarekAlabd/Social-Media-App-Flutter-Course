@@ -21,17 +21,19 @@ class HomePage extends StatelessWidget {
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-              HomePageHeader(),
-              const SizedBox(height: 24),
-              PostWritingCard(),
-              const SizedBox(height: 24),
-              SotiresSection(),
-              const SizedBox(height: 16),
-              PostsSection(),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 16),
+                HomePageHeader(),
+                const SizedBox(height: 24),
+                PostWritingCard(),
+                const SizedBox(height: 24),
+                SotiresSection(),
+                const SizedBox(height: 16),
+                PostsSection(),
+              ],
+            ),
           ),
         ),
       ),
