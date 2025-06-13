@@ -7,8 +7,8 @@ class PostModel {
   final String createdAt;
   final String? authorName;
   final String? authorImageUrl;
-  final String? videoUrl;
-  final String? imageUrl;
+  final String? file;
+  final String? image;
   final List<String>? likes;
   final List<String>? comments;
 
@@ -19,8 +19,8 @@ class PostModel {
     required this.createdAt,
     this.authorName,
     this.authorImageUrl,
-    this.videoUrl,
-    this.imageUrl,
+    this.file,
+    this.image,
     this.likes,
     this.comments,
   });
@@ -38,11 +38,11 @@ class PostModel {
     if(authorImageUrl != null){
       result.addAll({'author_image_url': authorImageUrl});
     }
-    if(videoUrl != null){
-      result.addAll({'video_url': videoUrl});
+    if(file != null){
+      result.addAll({'file': file});
     }
-    if(imageUrl != null){
-      result.addAll({'image_url': imageUrl});
+    if(image != null){
+      result.addAll({'image': image});
     }
     if(likes != null){
       result.addAll({'likes': likes});
@@ -60,8 +60,8 @@ class PostModel {
       text: map['text'] ?? '',
       authorId: map['author_id'] ?? '',
       createdAt: map['created_at'] ?? '',
-      // videoUrl: map['video_url'],
-      imageUrl: map['image_url'],
+      file: map['file'],
+      image: map['image'],
       likes: map['likes'] != null ? List<String>.from(map['likes']) : null,
       // comments: List<String>.from(map['comments']),
     );
@@ -78,8 +78,8 @@ class PostModel {
     String? createdAt,
     String? authorName,
     String? authorImageUrl,
-    String? videoUrl,
-    String? imageUrl,
+    String? file,
+    String? image,
     List<String>? likes,
     List<String>? comments,
   }) {
@@ -90,8 +90,8 @@ class PostModel {
       createdAt: createdAt ?? this.createdAt,
       authorName: authorName ?? this.authorName,
       authorImageUrl: authorImageUrl ?? this.authorImageUrl,
-      videoUrl: videoUrl ?? this.videoUrl,
-      imageUrl: imageUrl ?? this.imageUrl,
+      file: file ?? this.file,
+      image: image ?? this.image,
       likes: likes ?? this.likes,
       comments: comments ?? this.comments,
     );
