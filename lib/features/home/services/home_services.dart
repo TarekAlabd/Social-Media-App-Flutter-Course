@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:social_media_app/core/services/supabase_database_services.dart';
 import 'package:social_media_app/core/utils/app_tables_names.dart';
 import 'package:social_media_app/features/home/models/post_model.dart';
 import 'package:social_media_app/features/home/models/post_request_body.dart';
 import 'package:social_media_app/features/home/models/story_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeServices {
   final supabaseServices = SupabaseDatabaseServices.instance;
+  final supabaseStorageClient = Supabase.instance.client.storage;
 
   Future<List<StoryModel>> fetchStories() async {
     try {
@@ -42,8 +46,34 @@ class HomeServices {
     }
   }
 
-  Future<void> addPost(PostRequestBody post) async {
+  Future<void> addPost(PostRequestBody post, [File? image, File? file]) async {
     try {
+      String? imageUrl;
+      String? fileUrl;
+      if (image != null) {
+        imageUrl = await supabaseStorageClient
+            .from(AppTablesNames.posts)
+            .upload(
+              'private/${DateTime.now().toIso8601String()}',
+              image,
+              fileOptions: FileOptions(cacheControl: '3600', upsert: true),
+            );
+      }
+      if (file != null) {
+        fileUrl = await supabaseStorageClient
+            .from(AppTablesNames.posts)
+            .upload(
+              'private/${DateTime.now().toIso8601String()}',
+              file,
+              fileOptions: FileOptions(cacheControl: '3600', upsert: true),
+            );
+      }
+      if (imageUrl != null || fileUrl != null) {
+        post = post.copyWith(
+          image: 'https://yhfqwsvajrrqtrcflwxz.supabase.co/storage/v1/object/public/$imageUrl',
+          file: fileUrl,
+        );
+      }
       await supabaseServices.insertRow(
         table: AppTablesNames.posts,
         values: post.toMap(),

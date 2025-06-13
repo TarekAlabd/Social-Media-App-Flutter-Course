@@ -92,10 +92,10 @@ class PostItemWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(post.text, style: Theme.of(context).textTheme.bodyLarge),
-            if (post.imageUrl != null)
+            if (post.image != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: CachedNetworkImage(imageUrl: post.imageUrl!),
+                child: CachedNetworkImage(imageUrl: post.image!),
               ),
             const SizedBox(height: 24),
             Row(

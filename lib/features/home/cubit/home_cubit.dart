@@ -19,8 +19,8 @@ class HomeCubit extends Cubit<HomeState> {
   final coreAuthServices = CoreAuthServices();
   final filePickerServices = FilePickersServices();
 
-  XFile? currentImage;
-  XFile? currentFile;
+  File? currentImage;
+  File? currentFile;
 
   Future<void> fetchStories() async {
     emit(StoriesLoading());
@@ -79,10 +79,8 @@ class HomeCubit extends Cubit<HomeState> {
       final post = PostRequestBody(
         text: text,
         authorId: currentUser.id,
-        image: currentImage != null ? File(currentImage!.path) : null,
-        file: currentFile != null ? File(currentFile!.path) : null,
       );
-      await homeServices.addPost(post);
+      await homeServices.addPost(post, currentImage, currentFile);
       emit(PostCreated());
     } catch (e) {
       emit(PostCreateError(e.toString()));
@@ -104,7 +102,7 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final image = await filePickerServices.pickImage();
       if (image != null) {
-        currentImage = image;
+        currentImage = File(image.path);
         emit(ImagePicked(image));
       } else {
         emit(ImagePickedError("No image selected"));
@@ -119,7 +117,7 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final photo = await filePickerServices.takePhoto();
       if (photo != null) {
-        currentImage = photo;
+        currentImage = File(photo.path);
         emit(ImagePicked(photo));
       } else {
         emit(ImagePickedError("No photo taken"));
@@ -134,7 +132,7 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final file = await filePickerServices.pickFile();
       if (file != null) {
-        currentFile = file;
+        currentFile = File(file.path);
         emit(FilePicked(file));
       } else {
         emit(FilePickedError("No file selected"));
