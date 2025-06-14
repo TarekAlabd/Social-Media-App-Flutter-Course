@@ -44,8 +44,7 @@ final class PostCreatingInitial extends HomeState {
   const PostCreatingInitial({required this.currentUser});
 }
 
-final class FetchingUserData extends HomeState {
-}
+final class FetchingUserData extends HomeState {}
 
 final class PostCreating extends HomeState {}
 
@@ -85,4 +84,26 @@ final class FilePickedError extends HomeState {
   final String message;
 
   const FilePickedError(this.message);
+}
+
+/// Post Actions States
+final class PostLiked extends HomeState {
+  final String postId;
+  final int likesCount;
+  final bool isLiked;
+
+  const PostLiked({required this.postId, required this.likesCount, required this.isLiked});
+}
+
+final class PostLikeError extends HomeState {
+  final String message;
+  final String postId;
+
+  const PostLikeError(this.message, this.postId);
+}
+
+final class PostLiking extends HomeState {
+  final String postId;
+
+  const PostLiking(this.postId);
 }
