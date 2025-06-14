@@ -53,6 +53,8 @@ class PostItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final homeCubit = context.read<HomeCubit>();
+
     return Card(
       color: AppColors.white,
       child: Padding(
@@ -100,18 +102,40 @@ class PostItemWidget extends StatelessWidget {
             const SizedBox(height: 24),
             Row(
               children: [
-                InkWell(
-                  onTap: () {},
-                  child: Row(
-                    children: [
-                      Icon(Icons.thumb_up_alt_outlined, color: AppColors.black),
-                      const SizedBox(width: 4),
-                      Text(
-                        post.likes?.length.toString() ?? '0',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
+                BlocBuilder<HomeCubit, HomeState>(
+                  bloc: homeCubit,
+                  buildWhen:
+                      (previous, current) =>
+                          (current is PostLiking &&
+                              current.postId == post.id) ||
+                          (current is PostLiked && current.postId == post.id) ||
+                          (current is PostLikeError &&
+                              current.postId == post.id),
+                  builder: (context, state) {
+                    if (state is PostLiking) {
+                      return const CircularProgressIndicator.adaptive();
+                    }
+                    return Row(
+                      children: [
+                        IconButton(
+                          onPressed: () async {
+                            await homeCubit.likePost(post.id);
+                          },
+                          icon: Icon((state is PostLiked ? state.isLiked :  post.isLiked) ? Icons.thumb_up_alt : Icons.thumb_up_alt_outlined),
+                          color: (state is PostLiked ? state.isLiked :  post.isLiked) ? AppColors.primary : AppColors.black,
+                        ),
+                        InkWell(
+                          onTap: () {},
+                          child: Text(
+                            state is PostLiked
+                                ? state.likesCount.toString()
+                                : post.likes?.length.toString() ?? '0',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(width: 16),
                 InkWell(
@@ -119,7 +143,7 @@ class PostItemWidget extends StatelessWidget {
                   child: Row(
                     children: [
                       Icon(Icons.mode_comment_outlined, color: AppColors.black),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 8),
                       Text(
                         post.comments?.length.toString() ?? '0',
                         style: Theme.of(context).textTheme.bodyLarge,

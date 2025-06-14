@@ -11,6 +11,7 @@ class PostModel {
   final String? image;
   final List<String>? likes;
   final List<String>? comments;
+  final bool isLiked;
 
   const PostModel({
     required this.id,
@@ -23,34 +24,35 @@ class PostModel {
     this.image,
     this.likes,
     this.comments,
+    this.isLiked = false,
   });
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
-  
+
     result.addAll({'id': id});
     result.addAll({'text': text});
     result.addAll({'author_id': authorId});
     result.addAll({'created_at': createdAt});
-    if(authorName != null){
+    if (authorName != null) {
       result.addAll({'author_name': authorName});
     }
-    if(authorImageUrl != null){
+    if (authorImageUrl != null) {
       result.addAll({'author_image_url': authorImageUrl});
     }
-    if(file != null){
+    if (file != null) {
       result.addAll({'file': file});
     }
-    if(image != null){
+    if (image != null) {
       result.addAll({'image': image});
     }
-    if(likes != null){
+    if (likes != null) {
       result.addAll({'likes': likes});
     }
-    if(comments != null){
+    if (comments != null) {
       result.addAll({'comments': comments});
     }
-  
+
     return result;
   }
 
@@ -69,7 +71,8 @@ class PostModel {
 
   String toJson() => json.encode(toMap());
 
-  factory PostModel.fromJson(String source) => PostModel.fromMap(json.decode(source));
+  factory PostModel.fromJson(String source) =>
+      PostModel.fromMap(json.decode(source));
 
   PostModel copyWith({
     String? id,
@@ -82,6 +85,7 @@ class PostModel {
     String? image,
     List<String>? likes,
     List<String>? comments,
+    bool? isLiked,
   }) {
     return PostModel(
       id: id ?? this.id,
@@ -94,6 +98,7 @@ class PostModel {
       image: image ?? this.image,
       likes: likes ?? this.likes,
       comments: comments ?? this.comments,
+      isLiked: isLiked ?? this.isLiked,
     );
   }
 }

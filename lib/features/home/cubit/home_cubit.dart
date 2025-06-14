@@ -51,6 +51,7 @@ class HomeCubit extends Cubit<HomeState> {
           post = post.copyWith(
             authorName: userData.name,
             authorImageUrl: userData.imageUrl,
+            isLiked: post.likes?.contains(userData.id) ?? false,
           );
         }
         posts.add(post);
@@ -76,10 +77,7 @@ class HomeCubit extends Cubit<HomeState> {
         emit(PostCreateError("User not authenticated"));
         return;
       }
-      final post = PostRequestBody(
-        text: text,
-        authorId: currentUser.id,
-      );
+      final post = PostRequestBody(text: text, authorId: currentUser.id);
       await homeServices.addPost(post, currentImage, currentFile);
       emit(PostCreated());
     } catch (e) {
@@ -139,6 +137,30 @@ class HomeCubit extends Cubit<HomeState> {
       }
     } catch (e) {
       emit(FilePickedError(e.toString()));
+    }
+  }
+
+  /// Post Actions
+
+  Future<void> likePost(String postId) async {
+    emit(PostLiking(postId));
+    try {
+      final currentUser = await coreAuthServices.getCurrentUserData();
+      if (currentUser == null) {
+        emit(PostLikeError("User not authenticated", postId));
+        return;
+      }
+      final newPost = await homeServices.likePost(postId, currentUser.id);
+
+      emit(
+        PostLiked(
+          postId: postId,
+          likesCount: newPost.likes?.length ?? 0,
+          isLiked: newPost.isLiked,
+        ),
+      );
+    } catch (e) {
+      emit(PostLikeError(e.toString(), postId));
     }
   }
 }
