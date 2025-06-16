@@ -92,7 +92,11 @@ final class PostLiked extends HomeState {
   final int likesCount;
   final bool isLiked;
 
-  const PostLiked({required this.postId, required this.likesCount, required this.isLiked});
+  const PostLiked({
+    required this.postId,
+    required this.likesCount,
+    required this.isLiked,
+  });
 }
 
 final class PostLikeError extends HomeState {
@@ -106,4 +110,18 @@ final class PostLiking extends HomeState {
   final String postId;
 
   const PostLiking(this.postId);
+}
+
+final class FetchingPostLikes extends HomeState {}
+
+final class PostLikesFetched extends HomeState {
+  final List<UserData> likes;
+
+  const PostLikesFetched(this.likes);
+}
+
+final class PostLikesFetchError extends HomeState {
+  final String message;
+
+  const PostLikesFetchError(this.message);
 }

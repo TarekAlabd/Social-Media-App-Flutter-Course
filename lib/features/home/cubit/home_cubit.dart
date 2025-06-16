@@ -163,4 +163,25 @@ class HomeCubit extends Cubit<HomeState> {
       emit(PostLikeError(e.toString(), postId));
     }
   }
+
+  Future<void> fetchPostLikesDetails(String postId) async {
+    emit(FetchingPostLikes());
+    try {
+      final post = await homeServices.fetchPostById(postId);
+      if (post == null) {
+        emit(PostLikesFetchError("Post not found"));
+        return;
+      }
+      final likes = <UserData>[];
+      for (var likeId in post.likes ?? []) {
+        final userData = await coreAuthServices.getUserData(likeId);
+        if (userData != null) {
+          likes.add(userData);
+        }
+      }
+      emit(PostLikesFetched(likes));
+    } catch (e) {
+      emit(PostLikesFetchError(e.toString()));
+    }
+  }
 }

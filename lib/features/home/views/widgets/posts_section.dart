@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:social_media_app/core/utils/theme/app_colors.dart';
 import 'package:social_media_app/features/home/cubit/home_cubit.dart';
 import 'package:social_media_app/features/home/models/post_model.dart';
+import 'package:social_media_app/features/home/views/widgets/comments_sheet_section.dart';
 
 class PostsSection extends StatelessWidget {
   const PostsSection({super.key});
@@ -54,6 +55,7 @@ class PostItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homeCubit = context.read<HomeCubit>();
+    final size = MediaQuery.sizeOf(context);
 
     return Card(
       color: AppColors.white,
@@ -121,8 +123,17 @@ class PostItemWidget extends StatelessWidget {
                           onPressed: () async {
                             await homeCubit.likePost(post.id);
                           },
-                          icon: Icon((state is PostLiked ? state.isLiked :  post.isLiked) ? Icons.thumb_up_alt : Icons.thumb_up_alt_outlined),
-                          color: (state is PostLiked ? state.isLiked :  post.isLiked) ? AppColors.primary : AppColors.black,
+                          icon: Icon(
+                            (state is PostLiked ? state.isLiked : post.isLiked)
+                                ? Icons.thumb_up_alt
+                                : Icons.thumb_up_alt_outlined,
+                          ),
+                          color:
+                              (state is PostLiked
+                                      ? state.isLiked
+                                      : post.isLiked)
+                                  ? AppColors.primary
+                                  : AppColors.black,
                         ),
                         InkWell(
                           onTap: () {},
@@ -139,11 +150,30 @@ class PostItemWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      useRootNavigator: true,
+                      isScrollControlled: true,
+                      backgroundColor: AppColors.white,
+                      builder: (context) {
+                        return SizedBox(
+                          height: size.height * 0.94,
+                          width: size.width,
+                          child: SafeArea(
+                            child: BlocProvider.value(
+                              value: homeCubit,
+                              child: CommentsSheetSection(post: post),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                   child: Row(
                     children: [
                       Icon(Icons.mode_comment_outlined, color: AppColors.black),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       Text(
                         post.comments?.length.toString() ?? '0',
                         style: Theme.of(context).textTheme.bodyLarge,
