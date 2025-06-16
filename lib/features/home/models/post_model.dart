@@ -10,7 +10,7 @@ class PostModel {
   final String? file;
   final String? image;
   final List<String>? likes;
-  final List<String>? comments;
+  final int commentsCount;
   final bool isLiked;
 
   const PostModel({
@@ -23,7 +23,7 @@ class PostModel {
     this.file,
     this.image,
     this.likes,
-    this.comments,
+    this.commentsCount = 0,
     this.isLiked = false,
   });
 
@@ -49,9 +49,6 @@ class PostModel {
     if (likes != null) {
       result.addAll({'likes': likes});
     }
-    if (comments != null) {
-      result.addAll({'comments': comments});
-    }
 
     return result;
   }
@@ -65,7 +62,6 @@ class PostModel {
       file: map['file'],
       image: map['image'],
       likes: map['likes'] != null ? List<String>.from(map['likes']) : null,
-      // comments: List<String>.from(map['comments']),
     );
   }
 
@@ -84,8 +80,8 @@ class PostModel {
     String? file,
     String? image,
     List<String>? likes,
-    List<String>? comments,
     bool? isLiked,
+    int? commentsCount,
   }) {
     return PostModel(
       id: id ?? this.id,
@@ -97,8 +93,8 @@ class PostModel {
       file: file ?? this.file,
       image: image ?? this.image,
       likes: likes ?? this.likes,
-      comments: comments ?? this.comments,
       isLiked: isLiked ?? this.isLiked,
+      commentsCount: commentsCount ?? this.commentsCount,
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:social_media_app/core/services/core_auth_services.dart';
 import 'package:social_media_app/core/services/file_pickers_services.dart';
 import 'package:social_media_app/features/auth/models/user_data.dart';
+import 'package:social_media_app/features/home/models/comment_model.dart';
 import 'package:social_media_app/features/home/models/post_model.dart';
 import 'package:social_media_app/features/home/models/post_request_body.dart';
 import 'package:social_media_app/features/home/models/story_model.dart';
@@ -47,6 +48,8 @@ class HomeCubit extends Cubit<HomeState> {
       List<PostModel> posts = [];
       for (var post in rawPosts) {
         final userData = await coreAuthServices.getUserData(post.authorId);
+        final postComments = await homeServices.fetchComments(post.id);
+        post = post.copyWith(commentsCount: postComments.length);
         if (userData != null) {
           post = post.copyWith(
             authorName: userData.name,
@@ -182,6 +185,48 @@ class HomeCubit extends Cubit<HomeState> {
       emit(PostLikesFetched(likes));
     } catch (e) {
       emit(PostLikesFetchError(e.toString()));
+    }
+  }
+
+  Future<void> addComment({
+    required String postId,
+    required String text,
+    File? image,
+  }) async {
+    emit(CommentAdding());
+    try {
+      final currentUser = await coreAuthServices.getCurrentUserData();
+      if (currentUser == null) {
+        emit(CommentAddError("User not authenticated"));
+        return;
+      }
+      await homeServices.addComment(
+        postId: postId,
+        authorId: currentUser.id,
+        text: text,
+        image: image,
+      );
+      emit(CommentAdded());
+    } catch (e) {
+      emit(CommentAddError(e.toString()));
+    }
+  }
+
+  Future<void> fetchComments(String postId) async {
+    emit(CommentsFetching());
+    try {
+      final comments = await homeServices.fetchComments(postId);
+      List<CommentModel> commentList = [];
+      for (var comment in comments) {
+        final userData = await coreAuthServices.getUserData(comment.authorId);
+        if (userData != null) {
+          comment = comment.copyWith(authorName: userData.name, authorImageUrl: userData.imageUrl);
+        }
+        commentList.add(comment);
+      }
+      emit(CommentsFetched(commentList));
+    } catch (e) {
+      emit(CommentsFetchError(e.toString()));
     }
   }
 }

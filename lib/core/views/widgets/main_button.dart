@@ -6,22 +6,25 @@ class MainButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Widget? child;
   final bool isLoading;
+  final double width;
+
   const MainButton({
     super.key,
     this.height = 50,
+    this.width = double.infinity,
     this.onPressed,
     this.isLoading = false,
     this.child,
   }) : assert(
-          isLoading == false || child == null,
-          'Child cannot be set when isLoading is true',
-        );
+         isLoading == false || child == null,
+         'Child cannot be set when isLoading is true',
+       );
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
-      width: double.infinity,
+      width: width,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(

@@ -23,6 +23,7 @@ class _CommentsSheetSectionState extends State<CommentsSheetSection> {
     super.initState();
     _homeCubit = context.read<HomeCubit>();
     _homeCubit.fetchPostLikesDetails(widget.post.id);
+    _homeCubit.fetchComments(widget.post.id);
   }
 
   @override
