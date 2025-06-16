@@ -46,6 +46,19 @@ class HomeServices {
     }
   }
 
+  Future<PostModel?> fetchPostById(String postId) async {
+    try {
+      return await supabaseServices.fetchRow(
+        table: AppTablesNames.posts,
+        primaryKey: 'id',
+        id: postId,
+        builder: (data, id) => PostModel.fromMap(data),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> addPost(PostRequestBody post, [File? image, File? file]) async {
     try {
       String? imageUrl;
