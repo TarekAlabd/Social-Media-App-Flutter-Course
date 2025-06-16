@@ -125,3 +125,29 @@ final class PostLikesFetchError extends HomeState {
 
   const PostLikesFetchError(this.message);
 }
+
+final class CommentAdding extends HomeState {}
+
+final class CommentAdded extends HomeState {
+  const CommentAdded();
+}
+
+final class CommentAddError extends HomeState {
+  final String message;
+
+  const CommentAddError(this.message);
+}
+
+final class CommentsFetching extends HomeState {}
+
+final class CommentsFetched extends HomeState {
+  final List<CommentModel> comments;
+
+  const CommentsFetched(this.comments);
+}
+
+final class CommentsFetchError extends HomeState {
+  final String message;
+
+  const CommentsFetchError(this.message);
+}

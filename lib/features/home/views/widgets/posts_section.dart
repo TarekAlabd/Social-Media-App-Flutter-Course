@@ -175,7 +175,7 @@ class PostItemWidget extends StatelessWidget {
                       Icon(Icons.mode_comment_outlined, color: AppColors.black),
                       const SizedBox(width: 12),
                       Text(
-                        post.comments?.length.toString() ?? '0',
+                        post.commentsCount.toString(),
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],

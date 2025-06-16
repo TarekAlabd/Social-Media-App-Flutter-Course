@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:social_media_app/core/services/supabase_database_services.dart';
+import 'package:social_media_app/core/utils/app_constants.dart';
 import 'package:social_media_app/core/utils/app_tables_names.dart';
+import 'package:social_media_app/features/home/models/comment_model.dart';
+import 'package:social_media_app/features/home/models/comment_request_body.dart';
 import 'package:social_media_app/features/home/models/post_model.dart';
 import 'package:social_media_app/features/home/models/post_request_body.dart';
 import 'package:social_media_app/features/home/models/story_model.dart';
@@ -84,7 +87,7 @@ class HomeServices {
       if (imageUrl != null || fileUrl != null) {
         post = post.copyWith(
           image:
-              'https://yhfqwsvajrrqtrcflwxz.supabase.co/storage/v1/object/public/$imageUrl',
+              '${AppConstants.baseMediaUrl}$imageUrl',
           file: fileUrl,
         );
       }
@@ -122,6 +125,54 @@ class HomeServices {
         values: post.toMap(),
       );
       return post;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> addComment({
+    required String postId,
+    required String authorId,
+    required String text,
+    File? image,
+  }) async {
+    try {
+      String? imageUrl;
+      if (image != null) {
+        imageUrl = await supabaseStorageClient
+            .from(AppTablesNames.comments)
+            .upload(
+              'private/${DateTime.now().toIso8601String()}',
+              image,
+              fileOptions: FileOptions(cacheControl: '3600', upsert: true),
+            );
+      }
+      final comment = CommentRequestBody(
+        authorId: authorId,
+        text: text,
+        postId: postId,
+        image:
+            imageUrl != null
+                ? '${AppConstants.baseMediaUrl}$imageUrl'
+                : null,
+      );
+      await supabaseServices.insertRow(
+        table: AppTablesNames.comments,
+        values: comment.toMap(),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<CommentModel>> fetchComments(String postId) async {
+    try {
+      return await supabaseServices.fetchRows(
+        table: AppTablesNames.comments,
+        builder: (data, id) => CommentModel.fromMap(data),
+        primaryKey: 'id',
+        filter: (query) => query.eq('post_id', postId),
+      );
     } catch (e) {
       rethrow;
     }
