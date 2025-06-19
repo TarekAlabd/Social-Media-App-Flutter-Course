@@ -7,6 +7,7 @@ class MainButton extends StatelessWidget {
   final Widget? child;
   final bool isLoading;
   final double width;
+  final bool transparent;
 
   const MainButton({
     super.key,
@@ -15,6 +16,7 @@ class MainButton extends StatelessWidget {
     this.onPressed,
     this.isLoading = false,
     this.child,
+    this.transparent = false,
   }) : assert(
          isLoading == false || child == null,
          'Child cannot be set when isLoading is true',
@@ -28,10 +30,17 @@ class MainButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          backgroundColor: transparent ? AppColors.white : AppColors.primary,
+          foregroundColor: transparent ? AppColors.black : AppColors.white,
+          shape: RoundedRectangleBorder(
+            side:
+                transparent
+                    ? BorderSide(color: AppColors.greyBorder, width: 2)
+                    : BorderSide.none,
+            borderRadius: BorderRadius.circular(8),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
+          elevation: 0,
         ),
         child: isLoading ? const CircularProgressIndicator.adaptive() : child,
       ),
