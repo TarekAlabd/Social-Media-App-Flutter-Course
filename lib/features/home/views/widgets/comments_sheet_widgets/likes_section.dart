@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_app/core/cubit/posts_cubit/posts_cubit.dart';
 import 'package:social_media_app/features/home/cubit/home_cubit.dart';
 import 'package:social_media_app/features/home/models/post_model.dart';
 
@@ -11,10 +12,10 @@ class LikesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeCubit = context.read<HomeCubit>();
+    final postsCubit = context.read<PostsCubit>();
 
-    return BlocBuilder<HomeCubit, HomeState>(
-      bloc: homeCubit,
+    return BlocBuilder<PostsCubit, PostsState>(
+      bloc: postsCubit,
       buildWhen:
           (previous, current) =>
               current is FetchingPostLikes ||
