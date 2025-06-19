@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_app/core/cubit/posts_cubit/posts_cubit.dart';
 import 'package:social_media_app/core/views/widgets/main_button.dart';
 import 'package:social_media_app/features/home/cubit/home_cubit.dart';
 import 'package:social_media_app/features/home/models/post_model.dart';
@@ -18,7 +19,7 @@ class _SendCommentSectionState extends State<SendCommentSection> {
 
   @override
   Widget build(BuildContext context) {
-    final homeCubit = context.read<HomeCubit>();
+    final postsCubit = context.read<PostsCubit>();
 
     return Row(
       children: [
@@ -38,15 +39,15 @@ class _SendCommentSectionState extends State<SendCommentSection> {
         const SizedBox(width: 8),
         Expanded(
           flex: 1,
-          child: BlocConsumer<HomeCubit, HomeState>(
-            bloc: homeCubit,
+          child: BlocConsumer<PostsCubit, PostsState>(
+            bloc: postsCubit,
             listenWhen:
                 (previous, current) =>
                     current is CommentAdded || current is CommentAddError,
             listener: (context, state) async {
               if (state is CommentAdded) {
                 _commentController.clear();
-                await homeCubit.fetchComments(widget.post.id);
+                await postsCubit.fetchComments(widget.post.id);
               } else if (state is CommentAddError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -66,7 +67,7 @@ class _SendCommentSectionState extends State<SendCommentSection> {
               }
               return MainButton(
                 onPressed: () async {
-                  await homeCubit.addComment(
+                  await postsCubit.addComment(
                     postId: widget.post.id,
                     text: _commentController.text,
                   );

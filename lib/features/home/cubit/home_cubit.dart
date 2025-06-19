@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_media_app/core/services/core_auth_services.dart';
 import 'package:social_media_app/core/services/file_pickers_services.dart';
+import 'package:social_media_app/core/services/posts_services.dart';
 import 'package:social_media_app/features/auth/models/user_data.dart';
-import 'package:social_media_app/features/home/models/comment_model.dart';
 import 'package:social_media_app/features/home/models/post_model.dart';
 import 'package:social_media_app/features/home/models/post_request_body.dart';
 import 'package:social_media_app/features/home/models/story_model.dart';
@@ -19,6 +19,7 @@ class HomeCubit extends Cubit<HomeState> {
   final homeServices = HomeServices();
   final coreAuthServices = CoreAuthServices();
   final filePickerServices = FilePickersServices();
+  final postsServices = PostsServices();
 
   File? currentImage;
   File? currentFile;
@@ -48,7 +49,7 @@ class HomeCubit extends Cubit<HomeState> {
       List<PostModel> posts = [];
       for (var post in rawPosts) {
         final userData = await coreAuthServices.getUserData(post.authorId);
-        final postComments = await homeServices.fetchComments(post.id);
+        final postComments = await postsServices.fetchComments(post.id);
         post = post.copyWith(commentsCount: postComments.length);
         if (userData != null) {
           post = post.copyWith(
@@ -140,93 +141,6 @@ class HomeCubit extends Cubit<HomeState> {
       }
     } catch (e) {
       emit(FilePickedError(e.toString()));
-    }
-  }
-
-  /// Post Actions
-
-  Future<void> likePost(String postId) async {
-    emit(PostLiking(postId));
-    try {
-      final currentUser = await coreAuthServices.getCurrentUserData();
-      if (currentUser == null) {
-        emit(PostLikeError("User not authenticated", postId));
-        return;
-      }
-      final newPost = await homeServices.likePost(postId, currentUser.id);
-
-      emit(
-        PostLiked(
-          postId: postId,
-          likesCount: newPost.likes?.length ?? 0,
-          isLiked: newPost.isLiked,
-        ),
-      );
-    } catch (e) {
-      emit(PostLikeError(e.toString(), postId));
-    }
-  }
-
-  Future<void> fetchPostLikesDetails(String postId) async {
-    emit(FetchingPostLikes());
-    try {
-      final post = await homeServices.fetchPostById(postId);
-      if (post == null) {
-        emit(PostLikesFetchError("Post not found"));
-        return;
-      }
-      final likes = <UserData>[];
-      for (var likeId in post.likes ?? []) {
-        final userData = await coreAuthServices.getUserData(likeId);
-        if (userData != null) {
-          likes.add(userData);
-        }
-      }
-      emit(PostLikesFetched(likes));
-    } catch (e) {
-      emit(PostLikesFetchError(e.toString()));
-    }
-  }
-
-  Future<void> addComment({
-    required String postId,
-    required String text,
-    File? image,
-  }) async {
-    emit(CommentAdding());
-    try {
-      final currentUser = await coreAuthServices.getCurrentUserData();
-      if (currentUser == null) {
-        emit(CommentAddError("User not authenticated"));
-        return;
-      }
-      await homeServices.addComment(
-        postId: postId,
-        authorId: currentUser.id,
-        text: text,
-        image: image,
-      );
-      emit(CommentAdded());
-    } catch (e) {
-      emit(CommentAddError(e.toString()));
-    }
-  }
-
-  Future<void> fetchComments(String postId) async {
-    emit(CommentsFetching());
-    try {
-      final comments = await homeServices.fetchComments(postId);
-      List<CommentModel> commentList = [];
-      for (var comment in comments) {
-        final userData = await coreAuthServices.getUserData(comment.authorId);
-        if (userData != null) {
-          comment = comment.copyWith(authorName: userData.name, authorImageUrl: userData.imageUrl);
-        }
-        commentList.add(comment);
-      }
-      emit(CommentsFetched(commentList));
-    } catch (e) {
-      emit(CommentsFetchError(e.toString()));
     }
   }
 }
