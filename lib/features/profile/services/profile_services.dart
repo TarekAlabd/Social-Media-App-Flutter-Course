@@ -19,4 +19,27 @@ class ProfileServices {
       rethrow;
     }
   }
+
+  Future<void> updateUserProfile({
+    required String userId,
+    String? name,
+    String? title,
+    String? imageUrl,
+  }) async {
+    try {
+      final values = {
+        'name': name,
+        'title': title,
+        'image_url': imageUrl,
+      };
+      await supabaseServices.updateRow(
+        table: AppTablesNames.users,
+        column: 'id',
+        value: userId,
+        values: values,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

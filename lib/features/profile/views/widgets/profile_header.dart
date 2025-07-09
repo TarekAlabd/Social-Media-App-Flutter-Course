@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app/core/utils/route/app_routes.dart';
 import 'package:social_media_app/core/utils/theme/app_colors.dart';
 import 'package:social_media_app/core/views/widgets/main_button.dart';
 import 'package:social_media_app/features/auth/models/user_data.dart';
+import 'package:social_media_app/features/profile/cubit/profile_cubit/profile_cubit.dart';
+import 'package:social_media_app/features/profile/models/edit_profile_page_args.dart';
 
 class ProfileHeader extends StatelessWidget {
   final UserData userData;
@@ -13,6 +16,7 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
+    final profileCubit = context.read<ProfileCubit>();
 
     return Column(
       children: [
@@ -76,7 +80,16 @@ class ProfileHeader extends StatelessWidget {
           width: size.width * 0.5,
           transparent: true,
           onPressed:
-              () => Navigator.of(context).pushNamed(AppRoutes.editProfileRoute),
+              () => Navigator.of(context, rootNavigator: true).pushNamed(
+                AppRoutes.editProfileRoute,
+                arguments: EditProfilePageArgs(
+                  userData: userData,
+                ),
+              ).then((_) async{
+                // Refresh the profile data after editing
+                await profileCubit.fetchUserProfile();
+                await profileCubit.fetchUserPosts();
+              }),
           child: const Text('EDIT PROFILE'),
         ),
       ],
