@@ -80,7 +80,7 @@ class PostModel {
     String? file,
     String? image,
     List<String>? likes,
-    bool? isLiked,
+    bool? isMeLiked,
     int? commentsCount,
   }) {
     return PostModel(
@@ -93,7 +93,7 @@ class PostModel {
       file: file ?? this.file,
       image: image ?? this.image,
       likes: likes ?? this.likes,
-      isLiked: isLiked ?? this.isLiked,
+      isLiked: isMeLiked ?? isLiked,
       commentsCount: commentsCount ?? this.commentsCount,
     );
   }
