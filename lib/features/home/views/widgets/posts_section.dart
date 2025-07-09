@@ -1,12 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:social_media_app/core/utils/theme/app_colors.dart';
 import 'package:social_media_app/core/views/widgets/post_item_widget.dart';
 import 'package:social_media_app/features/home/cubit/home_cubit.dart';
-import 'package:social_media_app/features/home/models/post_model.dart';
-import 'package:social_media_app/features/home/views/widgets/comments_sheet_section.dart';
 
 class PostsSection extends StatelessWidget {
   const PostsSection({super.key});

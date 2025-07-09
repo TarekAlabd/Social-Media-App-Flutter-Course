@@ -11,7 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class PostsServices {
   final supabaseServices = SupabaseDatabaseServices.instance;
   final supabaseStorageClient = Supabase.instance.client.storage;
-  
+
   Future<PostModel?> fetchPostById(String postId) async {
     try {
       return await supabaseServices.fetchRow(
@@ -36,12 +36,12 @@ class PostsServices {
       if (post.likes != null && post.likes!.contains(userId)) {
         // User already liked the post, remove like
         post.likes!.remove(userId);
-        post = post.copyWith(isLiked: false);
+        post = post.copyWith(isMeLiked: false);
       } else {
         // User has not liked the post, add like
         post = post.copyWith(likes: post.likes ?? []);
         post.likes!.add(userId);
-        post = post.copyWith(isLiked: true);
+        post = post.copyWith(isMeLiked: true);
       }
       await supabaseServices.updateRow(
         table: AppTablesNames.posts,
@@ -77,9 +77,7 @@ class PostsServices {
         text: text,
         postId: postId,
         image:
-            imageUrl != null
-                ? '${AppConstants.baseMediaUrl}$imageUrl'
-                : null,
+            imageUrl != null ? '${AppConstants.baseMediaUrl}$imageUrl' : null,
       );
       await supabaseServices.insertRow(
         table: AppTablesNames.comments,
