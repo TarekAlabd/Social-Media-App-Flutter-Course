@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app/core/views/widgets/post_item_widget.dart';
 import 'package:social_media_app/features/auth/models/user_data.dart';
-import 'package:social_media_app/features/profile/cubit/profile_cubit.dart';
+import 'package:social_media_app/features/profile/cubit/profile_cubit/profile_cubit.dart';
 
 class ProfileDetails extends StatelessWidget {
   final UserData userData;
