@@ -6,7 +6,7 @@ class MainButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Widget? child;
   final bool isLoading;
-  final double width;
+  final double? width;
   final bool transparent;
 
   const MainButton({
